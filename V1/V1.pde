@@ -3,6 +3,7 @@
 PImage ocean_sparse;
 PImage ocean_dense;
 PImage ocean_alternate;
+PImage patrol_boat;
 
 float scale_of_objects = 0.5;
 
@@ -20,6 +21,7 @@ void setup() {
 
     ocean_sparse = loadImage("assets/ocean_sparse.png");
     ocean_dense = loadImage("assets/ocean_dense.png");
+    patrol_boat = loadImage("assets/patrol_boat.png");
     ocean_alternate = ocean_sparse;
 
     window_height = height;
@@ -29,6 +31,7 @@ void setup() {
 void draw() {
     background(255);
     draw_background();
+    draw_player_boat();
     frame_counter++;
 }
 
@@ -67,4 +70,10 @@ void change_background() {
 void reset_background() {
     background_y = 0;
     sub_background_y = -window_height;
+}
+
+void draw_player_boat() {
+    imageMode(CENTER);
+    image(patrol_boat, 360, 1000);
+    imageMode(CORNER);
 }
