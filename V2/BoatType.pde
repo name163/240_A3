@@ -1,0 +1,1 @@
+enum BoatType { SMALL, MEDIUM, LARGE;}
