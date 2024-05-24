@@ -27,9 +27,6 @@ void setup() {
 
     window_height = height;
     sub_background_y = -window_height;
-
-    // Spawn in some patrol boats
-    spawn_illegal_boat();
 }
 
 void draw() {
@@ -40,18 +37,37 @@ void draw() {
     for (int i = illegal_boats.size()-1; i >= 0; i--) {
         illegal_boats.get(i).draw_boat();
         illegal_boats.get(i).increment_y(scroll_speed);
-        if (illegal_boats.get(i).posY >= height) {
-            illegal_boats.remove(i);
-        }
-        if (illegal_boats.get(i).posX >= width) {
-            illegal_boats.remove(i);
+        switch(illegal_boats.get(i).boat_direction) {
+            case LEFT:
+                delete_left(i);
+            case RIGHT:
+                delete_right(i);
         }
     }
-    if (illegal_boats.size() < 10) {
+
+    if (illegal_boats.size() < random(1, 5)) {
         spawn_illegal_boat();
     }
 
-    frame_counter++;
+    frame_counter++; //<>//
+}
+
+void delete_left(int i) {
+    if (illegal_boats.get(i).posY >= height) {
+        illegal_boats.remove(i);
+    }
+    if (illegal_boats.get(i).posX <= 0-illegal_boats.get(i).get_image().width) {
+        illegal_boats.remove(i);
+    }
+}
+
+void delete_right(int i) {
+    if (illegal_boats.get(i).posY >= height) {
+        illegal_boats.remove(i);
+    }
+    if (illegal_boats.get(i).posX >= width) {
+        illegal_boats.remove(i);
+    }
 }
 
 void draw_background() {
@@ -96,8 +112,6 @@ void draw_player_boat() {
 
 void spawn_illegal_boat() {
     int posY = (int) random(0, 300);
-    int speed = (int) random(2, 5);
-    IllegalBoat newBoat = new IllegalBoat(posY, speed);
+    IllegalBoat newBoat = new IllegalBoat(posY);
     illegal_boats.add(newBoat);
 }
-
