@@ -6,23 +6,32 @@ class IllegalBoat {
     int y_speed = (int) random(2, 5);
     int speed;
 
-    // Will add randomiser for enum for boat type later
-    BoatType boat_type = BoatType.SMALL;
+    BoatType boat_type;
     
-    // Will add randomiser for enum for boat direction later
     BoatDirection boat_direction;
 
     IllegalBoat(int posY) {
         this.posY = posY;
         this.set_boat_direction();
+        this.set_boat_type();
         switch (boat_direction) {
             // Boat moves towards the left side of screen
             case LEFT:
                 switch(boat_type) {
                     case SMALL:
                         illegal_boat_img = loadImage("assets/small_boat_left.png");
+                        this.speed = int(random(-2, -1));
+                        break;
+                    case MEDIUM:
+                        illegal_boat_img = loadImage("assets/mid_boat_left.png");
+                        this.speed = int(random(-3, -2));
+                        break;
+                    case LARGE:
+                        illegal_boat_img = loadImage("assets/large_boat_left.png");
+                        this.speed = int(random(-5, -3));
+                        break;
                 }
-                this.speed = int(random(-5, -2));
+                
                 this.posX = 720;
                 break;
 
@@ -30,11 +39,26 @@ class IllegalBoat {
                 switch(boat_type) {
                     case SMALL:
                         illegal_boat_img = loadImage("assets/small_boat_right.png");
+                        this.speed = int(random(1, 2));
+                        break;
+                    case MEDIUM:
+                        illegal_boat_img = loadImage("assets/mid_boat_right.png");
+                        this.speed = int(random(2, 3));
+                        break;
+                    case LARGE:
+                        illegal_boat_img = loadImage("assets/large_boat_right.png");
+                        this.speed = int(random(3, 5));
+                        break;
                 }
-                this.speed = (int) random(2, 5);
+                
                 this.posX = -illegal_boat_img.width;
                 break;
         }
+
+        float scale = 1.6;
+        int img_width_scaled = int(illegal_boat_img.width * scale);
+        int img_height_scaled = int(illegal_boat_img.height * scale);
+        illegal_boat_img.resize(img_width_scaled, img_height_scaled);
     }
 
     void set_boat_direction() {
@@ -51,6 +75,16 @@ class IllegalBoat {
     // Will implement once the assets are done
     void set_boat_type() {
         float random_float = random(0, 2);
+        println(random_float);
+        if (random_float < 0.8) {
+            this.boat_type = BoatType.SMALL;
+        }
+        else if (random_float >= 0.8 && random_float < 1.5) {
+            this.boat_type = BoatType.MEDIUM;
+        }
+        else if (random_float >= 1.5) {
+            this.boat_type = BoatType.LARGE;
+        }
     }
 
     void increment_y(int y_speed) {

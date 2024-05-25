@@ -14,6 +14,8 @@ int background_y = 0;
 int sub_background_y;
 // The height of the window
 int window_height;
+int img_width_scaled;
+int img_height_scaled;
 
 ArrayList<IllegalBoat> illegal_boats = new ArrayList<IllegalBoat>();
 
@@ -27,16 +29,24 @@ void setup() {
 
     window_height = height;
     sub_background_y = -window_height;
+
+    float scale = 1.6;
+    img_width_scaled = int(patrol_boat.width * scale);
+    img_height_scaled = int(patrol_boat.height * scale);
 }
 
 void draw() {
     background(255);
+
     draw_background();
     draw_player_boat();
 
-    for (int i = illegal_boats.size()-1; i >= 0; i--) {
+    for (int i = 0; i < illegal_boats.size(); i++) {
         illegal_boats.get(i).draw_boat();
         illegal_boats.get(i).increment_y(scroll_speed);
+    }
+        
+    for (int i = illegal_boats.size()-1; i >= 0; i--) {
         switch(illegal_boats.get(i).boat_direction) {
             case LEFT:
                 delete_left(i);
@@ -53,27 +63,31 @@ void draw() {
 }
 
 void delete_left(int i) {
-    if (illegal_boats.get(i).posY >= height) {
-        illegal_boats.remove(i);
-    }
-    if (illegal_boats.get(i).posX <= 0-illegal_boats.get(i).get_image().width) {
-        illegal_boats.remove(i);
-    }
+    try {
+        if (illegal_boats.get(i).posY >= height) {
+            illegal_boats.remove(i);
+        }
+        if (illegal_boats.get(i).posX <= 0-illegal_boats.get(i).get_image().width) {
+            illegal_boats.remove(i);
+        }
+    } catch (Exception e) {}
+    
 }
 
 void delete_right(int i) {
-    if (illegal_boats.get(i).posY >= height) {
-        illegal_boats.remove(i);
-    }
-    if (illegal_boats.get(i).posX >= width) {
-        illegal_boats.remove(i);
-    }
+    try {
+        if (illegal_boats.get(i).posY >= height) {
+            illegal_boats.remove(i);
+        }
+        if (illegal_boats.get(i).posX >= width) {
+            illegal_boats.remove(i);
+        }
+    } catch (Exception e) {}
 }
 
 void draw_background() {
     change_background();
-    // Added scale for test images
-    // scale(1.5);
+
     image(ocean_alternate, 0, background_y);
     image(ocean_alternate, 0, sub_background_y);
 
@@ -106,6 +120,8 @@ void reset_background() {
 
 void draw_player_boat() {
     imageMode(CENTER);
+    
+    patrol_boat.resize(img_width_scaled, img_height_scaled);
     image(patrol_boat, 360, 1000);
     imageMode(CORNER);
 }
@@ -116,12 +132,16 @@ void spawn_illegal_boat() {
     illegal_boats.add(newBoat);
 }
 
-void mouseClicked() {
-    for (int i = illegal_boats.size()-1; i >= 0; i--) {\
+// Fixed using mousePressed()
+void mousePressed() {
+    for (int i = illegal_boats.size()-1; i >= 0; i--) {
+    // for (int i = 0; i < illegal_boats.size(); i--) {
         IllegalBoat boat = illegal_boats.get(i);
+        println(boat);
         if (mouseX > boat.posX && mouseX < boat.posX + boat.get_image().width) {
             if (mouseY > boat.posY && mouseY < boat.posY + boat.get_image().height) {
                 illegal_boats.remove(i);
+                break;
             }
         }
     }
