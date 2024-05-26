@@ -33,7 +33,7 @@ void setup() {
     ocean_alternate = ocean_sparse;
 
     // Initialising text options
-    my_font = createFont("Yu Gothic UI Semibold", 32);
+    my_font = createFont("Minecraft Regular", 30);
     textFont(my_font);
     textAlign(CENTER, CENTER);
 
@@ -77,9 +77,12 @@ void draw() {
 }
 
 void display_start_text() {
+    fill(0, 100);
+    rect(0, 0, width, height);
+    fill(255);
     // 2*sin(text_angle)+200 makes the text go up and down in a sine wave
     text(
-        "Around 21% of golbal fish catch\ncomes from overfished populations\n\nCatch as many illegal fishing boats as you can!"
+        "Around 21% of global fish catch\ncomes from overfishing.\n\nStop as many illegal fishing boats\nas you can!"
         , width/2, 2*sin(text_angle)+(height/3));
     text("Click to play", width/2, 2*sin(text_angle)+(2*height/3));
     text_angle -= 0.1;
