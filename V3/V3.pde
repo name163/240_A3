@@ -5,7 +5,10 @@ PImage ocean_dense;
 PImage ocean_alternate;
 PImage patrol_boat;
 
+PFont my_font;
+
 float scale_of_objects = 0.5;
+float text_angle = 200;
 
 int frame_counter = 0;
 int scroll_speed = 2;
@@ -17,6 +20,8 @@ int window_height;
 int img_width_scaled;
 int img_height_scaled;
 
+boolean game_started = false;
+
 ArrayList<IllegalBoat> illegal_boats = new ArrayList<IllegalBoat>();
 
 void setup() {
@@ -26,6 +31,11 @@ void setup() {
     ocean_dense = loadImage("assets/ocean_dense.png");
     patrol_boat = loadImage("assets/patrol_boat.png");
     ocean_alternate = ocean_sparse;
+
+    // Initialising text options
+    my_font = createFont("Yu Gothic UI Semibold", 32);
+    textFont(my_font);
+    textAlign(CENTER, CENTER);
 
     window_height = height;
     sub_background_y = -window_height;
@@ -37,38 +47,53 @@ void setup() {
 
 void draw() {
     background(255);
-
     draw_background();
     draw_player_boat();
 
-    for (int i = 0; i < illegal_boats.size(); i++) {
-        illegal_boats.get(i).draw_boat();
-        illegal_boats.get(i).increment_y(scroll_speed);
+    if (!game_started) {
+        display_start_text();
     }
-        
-    for (int i = illegal_boats.size()-1; i >= 0; i--) {
-        switch(illegal_boats.get(i).boat_direction) {
-            case LEFT:
-                delete_left(i);
-            case RIGHT:
-                delete_right(i);
+    else {
+        for (int i = 0; i < illegal_boats.size(); i++) {
+            illegal_boats.get(i).draw_boat();
+            illegal_boats.get(i).increment_y(scroll_speed);
         }
-    }
+            
+        for (int i = illegal_boats.size()-1; i >= 0; i--) {
+            switch(illegal_boats.get(i).boat_direction) {
+                case LEFT:
+                    delete_left(i);
+                case RIGHT:
+                    delete_right(i);
+            }
+        }
 
-    if (illegal_boats.size() < random(1, 5)) {
-        spawn_illegal_boat();
+        if (illegal_boats.size() < random(1, 5)) {
+            spawn_illegal_boat();
+        }
     }
 
     frame_counter++;
 }
 
+void display_start_text() {
+    // 2*sin(text_angle)+200 makes the text go up and down in a sine wave
+    text(
+        "Around 21% of golbal fish catch\ncomes from overfished populations\n\nCatch as many illegal fishing boats as you can!"
+        , width/2, 2*sin(text_angle)+(height/3));
+    text("Click to play", width/2, 2*sin(text_angle)+(2*height/3));
+    text_angle -= 0.1;
+}
+
 void delete_left(int i) {
     try {
-        if (illegal_boats.get(i).posY >= height) {
-            illegal_boats.remove(i);
-        }
-        if (illegal_boats.get(i).posX <= 0-illegal_boats.get(i).get_image().width) {
-            illegal_boats.remove(i);
+        if (illegal_boats.get(i).boat_direction == BoatDirection.LEFT) {
+            if (illegal_boats.get(i).posY >= height) {
+                illegal_boats.remove(i);
+            }
+            if (illegal_boats.get(i).posX <= 0-illegal_boats.get(i).get_image().width) {
+                illegal_boats.remove(i);
+            }
         }
     } catch (Exception e) {}
     
@@ -76,11 +101,13 @@ void delete_left(int i) {
 
 void delete_right(int i) {
     try {
-        if (illegal_boats.get(i).posY >= height) {
-            illegal_boats.remove(i);
-        }
-        if (illegal_boats.get(i).posX >= width) {
-            illegal_boats.remove(i);
+        if (illegal_boats.get(i).boat_direction == BoatDirection.RIGHT) {
+            if (illegal_boats.get(i).posY >= height) {
+                illegal_boats.remove(i);
+            }
+            if (illegal_boats.get(i).posX >= width) {
+                illegal_boats.remove(i);
+            }
         }
     } catch (Exception e) {}
 }
@@ -132,8 +159,12 @@ void spawn_illegal_boat() {
     illegal_boats.add(newBoat);
 }
 
-// Fixed using mousePressed()
+
 void mousePressed() {
+    if (!game_started) {
+        game_started = true;
+    }
+
     for (int i = illegal_boats.size()-1; i >= 0; i--) {
     // for (int i = 0; i < illegal_boats.size(); i--) {
         IllegalBoat boat = illegal_boats.get(i);

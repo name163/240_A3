@@ -32,7 +32,7 @@ class IllegalBoat {
                         break;
                 }
                 
-                this.posX = 720;
+                this.posX = 720 + int(random(50, 100));
                 break;
 
             case RIGHT:
@@ -51,7 +51,7 @@ class IllegalBoat {
                         break;
                 }
                 
-                this.posX = -illegal_boat_img.width;
+                this.posX = -illegal_boat_img.width - int(random(50, 100));
                 break;
         }
 
@@ -75,7 +75,6 @@ class IllegalBoat {
     // Will implement once the assets are done
     void set_boat_type() {
         float random_float = random(0, 2);
-        println(random_float);
         if (random_float < 0.8) {
             this.boat_type = BoatType.SMALL;
         }
