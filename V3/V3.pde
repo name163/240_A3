@@ -19,6 +19,7 @@ int sub_background_y;
 int window_height;
 int img_width_scaled;
 int img_height_scaled;
+int player_score;
 
 boolean game_started = false;
 
@@ -26,6 +27,7 @@ ArrayList<IllegalBoat> illegal_boats = new ArrayList<IllegalBoat>();
 
 void setup() {
     size(720, 1280);
+    noStroke();
 
     ocean_sparse = loadImage("assets/ocean_sparse.png");
     ocean_dense = loadImage("assets/ocean_dense.png");
@@ -48,6 +50,7 @@ void setup() {
 void draw() {
     background(255);
     draw_background();
+    display_player_score();
     draw_player_boat();
 
     if (!game_started) {
@@ -68,11 +71,12 @@ void draw() {
             }
         }
 
-        if (illegal_boats.size() < random(1, 5)) {
+        if (illegal_boats.size() < 2) {
             spawn_illegal_boat();
         }
     }
 
+    println(player_score);
     frame_counter++;
 }
 
@@ -82,10 +86,17 @@ void display_start_text() {
     fill(255);
     // 2*sin(text_angle)+200 makes the text go up and down in a sine wave
     text(
-        "Around 21% of global fish catch\ncomes from overfishing.\n\nStop as many illegal fishing boats\nas you can!"
-        , width/2, 2*sin(text_angle)+(height/3));
+        "Around 21% of global fish catch\ncomes from overfishing.\n\nStop as many illegal fishing boats\nas you can!",
+        width/2, 2*sin(text_angle)+(height/3));
     text("Click to play", width/2, 2*sin(text_angle)+(2*height/3));
     text_angle -= 0.1;
+}
+
+void display_player_score() {
+    fill(0, 100);
+    rect(260, 0, 200, 60);
+    fill(255);
+    text("Score: " + player_score, width/2, 25);
 }
 
 void delete_left(int i) {
@@ -94,7 +105,7 @@ void delete_left(int i) {
             if (illegal_boats.get(i).posY >= height) {
                 illegal_boats.remove(i);
             }
-            if (illegal_boats.get(i).posX <= 0-illegal_boats.get(i).get_image().width) {
+            if (illegal_boats.get(i).posX <= 0 - illegal_boats.get(i).get_image().width) {
                 illegal_boats.remove(i);
             }
         }
@@ -171,9 +182,9 @@ void mousePressed() {
     for (int i = illegal_boats.size()-1; i >= 0; i--) {
     // for (int i = 0; i < illegal_boats.size(); i--) {
         IllegalBoat boat = illegal_boats.get(i);
-        println(boat);
         if (mouseX > boat.posX && mouseX < boat.posX + boat.get_image().width) {
             if (mouseY > boat.posY && mouseY < boat.posY + boat.get_image().height) {
+                player_score += boat.get_points();
                 illegal_boats.remove(i);
                 break;
             }

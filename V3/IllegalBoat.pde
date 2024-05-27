@@ -5,6 +5,7 @@ class IllegalBoat {
     int posY;
     int y_speed = (int) random(2, 5);
     int speed;
+    int points_worth;
 
     BoatType boat_type;
     
@@ -77,12 +78,15 @@ class IllegalBoat {
         float random_float = random(0, 2);
         if (random_float < 0.8) {
             this.boat_type = BoatType.SMALL;
+            this.points_worth = 1;
         }
         else if (random_float >= 0.8 && random_float < 1.5) {
             this.boat_type = BoatType.MEDIUM;
+            this.points_worth = 2;
         }
         else if (random_float >= 1.5) {
             this.boat_type = BoatType.LARGE;
+            this.points_worth = 3;
         }
     }
 
@@ -105,5 +109,9 @@ class IllegalBoat {
 
     BoatDirection print_direction() {
         return boat_direction;
+    }
+
+    int get_points() {
+        return points_worth;
     }
 }
