@@ -1,0 +1,1 @@
+enum BoatDirection { LEFT, RIGHT;}
