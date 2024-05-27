@@ -1,5 +1,4 @@
-// V4: Increase difficulty as player progress,
-// adding animation for when boat is clicked, implementing game over
+// V4: Implement difficulty into the code, implementing game over
 
 PImage ocean_sparse;
 PImage ocean_dense;
@@ -21,6 +20,7 @@ int window_height;
 int img_width_scaled;
 int img_height_scaled;
 int player_score;
+int difficulty_modifier = 1;
 
 boolean game_started = false;
 
@@ -53,11 +53,13 @@ void draw() {
     draw_background();
     display_player_score();
     draw_player_boat();
+    // println(difficulty_modifier);
 
     if (!game_started) {
         display_start_text();
     }
     else {
+        update_difficulty_modifier();
         try {
             for (int i = 0; i < illegal_boats.size(); i++) {
                 illegal_boats.get(i).draw_boat();
@@ -74,7 +76,8 @@ void draw() {
             }
         } catch (Exception e) {}
         
-        if (illegal_boats.size() < 2) {
+
+        if (illegal_boats.size() < 1 + difficulty_modifier) {
             spawn_illegal_boat();
         }
     }
@@ -171,8 +174,15 @@ void draw_player_boat() {
 
 void spawn_illegal_boat() {
     int posY = (int) random(0, 300);
-    IllegalBoat newBoat = new IllegalBoat(posY);
+    IllegalBoat newBoat = new IllegalBoat(posY, difficulty_modifier);
     illegal_boats.add(newBoat);
+}
+
+void update_difficulty_modifier() {
+    // Every 10 seconds the difficulty increase
+    if (frame_counter % 600 == 0) {
+        difficulty_modifier += 1;
+    }
 }
 
 
@@ -187,7 +197,7 @@ void mousePressed() {
         if (mouseX > boat.posX && mouseX < boat.posX + boat.get_image().width) {
             if (mouseY > boat.posY && mouseY < boat.posY + boat.get_image().height) {
                 player_score += boat.get_points();
-                boat.remove_from_list();
+                illegal_boats.remove(i);
                 break;
             }
         }

@@ -1,6 +1,5 @@
 class IllegalBoat {
     PImage illegal_boat_img;
-    PImage dead_boat_arrow;
 
     int posX;
     int posY;
@@ -8,15 +7,11 @@ class IllegalBoat {
     int speed;
     int points_worth;
 
-    float opacity = 255;
-
-    boolean boat_img_disappear = false;
-
     BoatType boat_type;
     
     BoatDirection boat_direction;
 
-    IllegalBoat(int posY) {
+    IllegalBoat(int posY, int speed_mod) {
         this.posY = posY;
         this.set_boat_direction();
         this.set_boat_type();
@@ -26,7 +21,7 @@ class IllegalBoat {
                 switch(boat_type) {
                     case SMALL:
                         illegal_boat_img = loadImage("assets/small_boat_left.png");
-                        this.speed = int(random(-2, -1));
+                        this.speed = int(random(-5, -3));
                         break;
                     case MEDIUM:
                         illegal_boat_img = loadImage("assets/mid_boat_left.png");
@@ -34,18 +29,19 @@ class IllegalBoat {
                         break;
                     case LARGE:
                         illegal_boat_img = loadImage("assets/large_boat_left.png");
-                        this.speed = int(random(-5, -3));
+                        this.speed = int(random(-2, -1));
                         break;
                 }
                 
                 this.posX = 720 + int(random(50, 100));
+                this.speed -= speed_mod;
                 break;
 
             case RIGHT:
                 switch(boat_type) {
                     case SMALL:
                         illegal_boat_img = loadImage("assets/small_boat_right.png");
-                        this.speed = int(random(1, 2));
+                        this.speed = int(random(3, 4));
                         break;
                     case MEDIUM:
                         illegal_boat_img = loadImage("assets/mid_boat_right.png");
@@ -53,11 +49,12 @@ class IllegalBoat {
                         break;
                     case LARGE:
                         illegal_boat_img = loadImage("assets/large_boat_right.png");
-                        this.speed = int(random(3, 5));
+                        this.speed = int(random(1, 2));
                         break;
                 }
                 
                 this.posX = -illegal_boat_img.width - int(random(50, 100));
+                this.speed += speed_mod;
                 break;
         }
 
@@ -75,6 +72,7 @@ class IllegalBoat {
         }
         else if (random_float >= 0.5) {
             this.boat_direction = BoatDirection.RIGHT;
+            println(posY + " RIGHT");
         }
     }
 
@@ -101,25 +99,11 @@ class IllegalBoat {
 
     void draw_boat() {
         this.posX = posX + speed;
-        if (boat_img_disappear) {
-            tint(255, this.opacity);
-            boat_disappear();
-            image(illegal_boat_img, posX, posY);
-            tint(255, 255);
-        } else {
-            image(illegal_boat_img, posX, posY);
-        }
-        if (this.opacity == 0) {
-            illegal_boats.remove(this);
-        }
+        image(illegal_boat_img, posX, posY);
     }
 
     void boat_disappear() {
-        // half a second time to disappear
-        this.opacity -= 8.5;
-        if (this.opacity < 0) {
-            this.opacity = 0;
-        }
+        // For V3
     }
 
     PImage get_image() {
@@ -132,9 +116,5 @@ class IllegalBoat {
 
     int get_points() {
         return points_worth;
-    }
-
-    void remove_from_list() {
-        boat_img_disappear = true;
     }
 }
