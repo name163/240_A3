@@ -19,12 +19,16 @@ int sub_background_y;
 int window_height;
 int img_width_scaled;
 int img_height_scaled;
+int health_width_scaled;
+int health_height_scaled;
 int player_score;
 int difficulty_modifier = 1;
 
 boolean game_started = false;
 
 ArrayList<IllegalBoat> illegal_boats = new ArrayList<IllegalBoat>();
+
+PImage[] health_bar = new PImage[3];
 
 void setup() {
     size(720, 1280);
@@ -33,6 +37,13 @@ void setup() {
     ocean_sparse = loadImage("assets/ocean_sparse.png");
     ocean_dense = loadImage("assets/ocean_dense.png");
     patrol_boat = loadImage("assets/patrol_boat.png");
+
+    float health_bar_scale = 0.2;
+    for (int i = 0; i < health_bar.length; i++) {
+        health_bar[i] = loadImage("assets/health_alive.png");
+        health_width_scaled = int(health_bar[i].width * health_bar_scale);
+        health_height_scaled = int(health_bar[i].height * health_bar_scale);
+    }
     ocean_alternate = ocean_sparse;
 
     // Initialising text options
@@ -43,9 +54,9 @@ void setup() {
     window_height = height;
     sub_background_y = -window_height;
 
-    float scale = 1.6;
-    img_width_scaled = int(patrol_boat.width * scale);
-    img_height_scaled = int(patrol_boat.height * scale);
+    float patrol_boat_scale = 1.6;
+    img_width_scaled = int(patrol_boat.width * patrol_boat_scale);
+    img_height_scaled = int(patrol_boat.height * patrol_boat_scale);
 }
 
 void draw() {
@@ -60,6 +71,7 @@ void draw() {
     }
     else {
         update_difficulty_modifier();
+        display_life();
         try {
             for (int i = 0; i < illegal_boats.size(); i++) {
                 illegal_boats.get(i).draw_boat();
@@ -102,6 +114,13 @@ void display_player_score() {
     rect(260, 0, 200, 60);
     fill(255);
     text("Score: " + player_score, width/2, 25);
+}
+
+void display_life() {
+    for (int i = 0; i < health_bar.length; i++) {
+        health_bar[i].resize(health_width_scaled, health_height_scaled);
+        image(health_bar[i], 100 + (health_bar[i].width * i), 5);
+    }
 }
 
 void delete_left(int i) {
