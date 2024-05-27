@@ -9,6 +9,7 @@ PFont my_font;
 
 float scale_of_objects = 0.5;
 float text_angle = 200;
+float health_bar_scale = 0.2;
 
 int frame_counter = 0;
 int scroll_speed = 2;
@@ -23,6 +24,8 @@ int health_width_scaled;
 int health_height_scaled;
 int player_score;
 int difficulty_modifier = 1;
+int player_health = 3;
+int top_score = 0;
 
 boolean game_started = false;
 
@@ -38,12 +41,6 @@ void setup() {
     ocean_dense = loadImage("assets/ocean_dense.png");
     patrol_boat = loadImage("assets/patrol_boat.png");
 
-    float health_bar_scale = 0.2;
-    for (int i = 0; i < health_bar.length; i++) {
-        health_bar[i] = loadImage("assets/health_alive.png");
-        health_width_scaled = int(health_bar[i].width * health_bar_scale);
-        health_height_scaled = int(health_bar[i].height * health_bar_scale);
-    }
     ocean_alternate = ocean_sparse;
 
     // Initialising text options
@@ -72,6 +69,8 @@ void draw() {
     else {
         update_difficulty_modifier();
         display_life();
+        check_player_health();
+
         try {
             for (int i = 0; i < illegal_boats.size(); i++) {
                 illegal_boats.get(i).draw_boat();
@@ -88,7 +87,6 @@ void draw() {
             }
         } catch (Exception e) {}
         
-
         if (illegal_boats.size() < 1 + difficulty_modifier) {
             spawn_illegal_boat();
         }
@@ -106,6 +104,7 @@ void display_start_text() {
         "Around 21% of global fish catch\ncomes from overfishing.\n\nStop as many illegal fishing boats\nas you can!",
         width/2, 2*sin(text_angle)+(height/3));
     text("Click to play", width/2, 2*sin(text_angle)+(2*height/3));
+    text("Top score: " + top_score, width/2, 2*sin(text_angle)+(1.5*height/3));
     text_angle -= 0.1;
 }
 
@@ -118,8 +117,20 @@ void display_player_score() {
 
 void display_life() {
     for (int i = 0; i < health_bar.length; i++) {
-        health_bar[i].resize(health_width_scaled, health_height_scaled);
-        image(health_bar[i], 100 + (health_bar[i].width * i), 5);
+        if (i < player_health) {
+            health_bar[i] = loadImage("assets/health_alive.png");
+            health_width_scaled = int(health_bar[i].width * health_bar_scale);
+            health_height_scaled = int(health_bar[i].height * health_bar_scale);
+            health_bar[i].resize(health_width_scaled, health_height_scaled);
+            image(health_bar[i], 100 + (health_bar[i].width * i), 5);
+        }
+        else {
+            health_bar[i] = loadImage("assets/health_dead.png");
+            health_width_scaled = int(health_bar[i].width * health_bar_scale);
+            health_height_scaled = int(health_bar[i].height * health_bar_scale);
+            health_bar[i].resize(health_width_scaled, health_height_scaled);
+            image(health_bar[i], 100 + (health_bar[i].width * i), 5);
+        }
     }
 }
 
@@ -128,9 +139,11 @@ void delete_left(int i) {
         if (illegal_boats.get(i).boat_direction == BoatDirection.LEFT) {
             if (illegal_boats.get(i).posY >= height) {
                 illegal_boats.remove(i);
+                player_health -= 1;
             }
             if (illegal_boats.get(i).posX <= 0 - illegal_boats.get(i).get_image().width) {
                 illegal_boats.remove(i);
+                player_health -= 1;
             }
         }
     } catch (Exception e) {}
@@ -142,9 +155,11 @@ void delete_right(int i) {
         if (illegal_boats.get(i).boat_direction == BoatDirection.RIGHT) {
             if (illegal_boats.get(i).posY >= height) {
                 illegal_boats.remove(i);
+                player_health -= 1;
             }
             if (illegal_boats.get(i).posX >= width) {
                 illegal_boats.remove(i);
+                player_health -= 1;
             }
         }
     } catch (Exception e) {}
@@ -204,6 +219,22 @@ void update_difficulty_modifier() {
     }
 }
 
+void check_player_health() {
+    if (player_health <= 0) {
+        reset_game();
+    }
+}
+
+void reset_game() {
+    game_started = false;
+    player_health = 3;
+    if (player_score > top_score) {
+        top_score = player_score;
+    }
+    player_score = 0;
+    difficulty_modifier = 1;
+    illegal_boats = new ArrayList<IllegalBoat>();
+}
 
 void mousePressed() {
     if (!game_started) {
