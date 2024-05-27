@@ -61,7 +61,6 @@ void draw() {
     draw_background();
     display_player_score();
     draw_player_boat();
-    // println(difficulty_modifier);
 
     if (!game_started) {
         display_start_text();
@@ -119,19 +118,20 @@ void display_life() {
     for (int i = 0; i < health_bar.length; i++) {
         if (i < player_health) {
             health_bar[i] = loadImage("assets/health_alive.png");
-            health_width_scaled = int(health_bar[i].width * health_bar_scale);
-            health_height_scaled = int(health_bar[i].height * health_bar_scale);
-            health_bar[i].resize(health_width_scaled, health_height_scaled);
-            image(health_bar[i], 100 + (health_bar[i].width * i), 5);
+            resize_health(i);
         }
         else {
             health_bar[i] = loadImage("assets/health_dead.png");
-            health_width_scaled = int(health_bar[i].width * health_bar_scale);
-            health_height_scaled = int(health_bar[i].height * health_bar_scale);
-            health_bar[i].resize(health_width_scaled, health_height_scaled);
-            image(health_bar[i], 100 + (health_bar[i].width * i), 5);
+            resize_health(i);
         }
     }
+}
+
+void resize_health(int i) {
+    health_width_scaled = int(health_bar[i].width * health_bar_scale);
+    health_height_scaled = int(health_bar[i].height * health_bar_scale);
+    health_bar[i].resize(health_width_scaled, health_height_scaled);
+    image(health_bar[i], 100 + (health_bar[i].width * i), 5);
 }
 
 void delete_left(int i) {

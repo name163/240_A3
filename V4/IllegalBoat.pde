@@ -72,7 +72,6 @@ class IllegalBoat {
         }
         else if (random_float >= 0.5) {
             this.boat_direction = BoatDirection.RIGHT;
-            println(posY + " RIGHT");
         }
     }
 
@@ -100,10 +99,6 @@ class IllegalBoat {
     void draw_boat() {
         this.posX = posX + speed;
         image(illegal_boat_img, posX, posY);
-    }
-
-    void boat_disappear() {
-        // For V3
     }
 
     PImage get_image() {
