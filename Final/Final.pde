@@ -1,4 +1,4 @@
-// V4: Implement difficulty into the code, implementing game over
+// Final: Code refactoring, implementing game over screen
 
 PImage ocean_sparse;
 PImage ocean_dense;
@@ -26,6 +26,7 @@ int player_health = 3;  // Player total health
 int top_score = 0;
 
 boolean game_started = false;
+boolean game_over = false;
 
 ArrayList<IllegalBoat> illegal_boats = new ArrayList<IllegalBoat>();
 
@@ -66,6 +67,8 @@ void draw() {
     // If game has started, remove start text and spawn in IllegalBoat objects
     if (!game_started) {
         display_start_text();
+    } else if (game_over) {
+        display_end_text();
     }
     else {
         display_player_score();
@@ -112,6 +115,19 @@ void display_start_text() {
         width/2, 2 * sin(text_angle) + (height/3));
     text("Click to play", width/2, 2 * sin(text_angle) + (2*height/3));
     text("Top score: " + top_score, width/2, 2 * sin(text_angle) + (1.5*height/3));
+    text_angle -= 0.1;
+}
+
+void display_end_text() {
+    fill(0, 100);
+    rect(0, 0, width, height);
+    fill(255);
+    // 2 * sin(text_angle) + height makes the text go up and down in a sine wave
+    text(
+        "Overfishing\nhas destroyed aquatic life :(\n\nTo report potential\nillegal fishing activity:\ncall 0800 47 62 24.",
+        width/2, 2 * sin(text_angle) + (height/3));
+    text("Click to return to main menu", width/2, 2 * sin(text_angle) + (2*height/3));
+    text("Final score: " + player_score, width/2, 2 * sin(text_angle) + (1.5*height/3));
     text_angle -= 0.1;
 }
 
@@ -229,7 +245,7 @@ void update_difficulty_modifier() {
 
 void check_player_health() {
     if (player_health <= 0) {
-        reset_game();
+        game_over = true;
     }
 }
 
@@ -248,6 +264,9 @@ void mousePressed() {
     // When player clicks the first time
     if (!game_started) {
         game_started = true;
+    } else if (game_over) {
+        reset_game();
+        game_over = false;
     }
 
     for (int i = illegal_boats.size()-1; i >= 0; i--) {
